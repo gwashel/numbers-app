@@ -15,11 +15,12 @@
   </form>
 
   <script>
-    function addNumbers() {
+    async function addNumbers() {
       let number1Input = document.getElementById("number1").value;
       let number2Input = document.getElementById("number2").value;
-      let sum = Number(number1Input) + Number(number2Input);
-       
+      const response = await fetch("http://localhost:3000/add/" + number1Input +'/' + number2Input);
+      const sum = await response.json();
+      console.log(sum);
       document.getElementById("sum").innerText = sum;
     }
   </script>
