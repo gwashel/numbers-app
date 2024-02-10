@@ -4,25 +4,135 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Simple Addition</title>
-</head>
-<body>
-  <form>
-    <input placeholder='Enter a number' id="number1" name="number1" type="number"><br>
-    <h3>+</h3>
-    <input placeholder='Enter another number' id="number2" name="number2" type="number"><br><br>
-    <input type="button" value="=" onclick="addNumbers()">
-    <label id="sum"></label>
-  </form>
-
-  <script>
-    async function addNumbers() {
-      let number1Input = document.getElementById("number1").value;
-      let number2Input = document.getElementById("number2").value;
-      const response = await fetch("http://localhost:3000/add/" + number1Input +'/' + number2Input);
-      const sum = await response.json();
-      console.log(sum);
-      document.getElementById("sum").innerText = sum;
+  <style>
+    body {
+      font-family: Arial, sans-serif;
     }
+
+    #calculator {
+      width: 350px;
+      margin: 50px auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    #display {
+      width: 80%;
+      padding: 10px;
+      font-size: 18px;
+      
+    }
+
+    button {
+      width: 70px;
+      height: 40px;
+      margin: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      
+    }
+
+    .operator {
+      background-color: #f5913e;
+      color: #fff;
+    }
+    h1 {
+      align-self:  center;
+      font-weight: bold;
+    }
+    #clear {
+      background-color: #dc3545;
+      color: #fff;
+      align-self: center;
+    }
+
+    #equal {
+      background-color: #28a745;
+      color: #fff;
+    }
+  </style>
+</head>
+<body id="calculator">
+
+  <div class="numContainer">
+    <h1>Simple Calculator</h1>
+    <div >
+      <input id="display" type="text" readonly>
+      <button id='clear' onclick="clearDisplay()">Clear</button>
+    </div>
+    <div>
+      <button onclick="appendNumbers(1)">1</button>
+      <button onclick="appendNumbers(2)">2</button>
+      <button onclick="appendNumbers(3)">3</button>
+      <button class='operator' onclick="handleOperation('div')">/</button>
+    <div>
+      <button onclick="appendNumbers(4)">4</button>
+      <button onclick="appendNumbers(5)">5</button>
+      <button onclick="appendNumbers(6)">6</button>
+      <button class='operator' onclick="handleOperation('mul')">*</button>
+    </div>
+    <div>
+      <button onclick="appendNumbers(7)">7</button>
+      <button onclick="appendNumbers(8)">8</button>
+      <button onclick="appendNumbers(9)">9</button>
+      <button class='operator' onclick="handleOperation('sub')">-</button>
+    </div>
+    <div>
+      <button onclick="appendNumbers(0)">0</button>
+      <button class='operator' onclick="handleOperation('add')">+</button>
+      <button id='equal' onclick="handleSubmit()">=</button>
+    </div>
+
+  </div>
+  
+  <script>
+    let num1 = 0; 
+    let num2 = 0; 
+    let currentNum = 0;
+    let operationType = ''; 
+    function appendNumbers(btnNum) {
+      const display = document.getElementById("display");
+      if (currentNum === 0) {
+        currentNum = parseFloat(btnNum);
+      }
+      else {
+        currentNum = parseFloat('' + currentNum + btnNum);
+      }
+      display.value = currentNum;
+    }
+    function clearDisplay() {
+      console.log("clear");
+       num1 = 0;
+       num2 = 0;
+       currentNum = 0;
+       const display = document.getElementById("display");
+       display.value = currentNum;
+    }
+    async function handleOperation(type) {
+      const display = document.getElementById("display");
+      num1 = currentNum; 
+      currentNum = 0; 
+      display.value = currentNum;
+      operationType = type; 
+    }
+    async function handleSubmit() {
+      console.log("fetching submit"); 
+      const display = document.getElementById("display");
+      num2 = currentNum;
+      if (operationType && num2 !== 0) {
+        display.value = "loading...";
+        const response = await fetch(`https://arithmetic-service-gwashel.onrender.com/${operationType}` + '/' + num1 +'/' + num2);
+        const result = await response.json();
+        console.log("value = " + result);
+        display.value = result; 
+        currentNum = result;
+      }
+      else {
+        display.value = 'ERROR'; 
+      }
+    }
+  
   </script>
 </body>
 </html>
